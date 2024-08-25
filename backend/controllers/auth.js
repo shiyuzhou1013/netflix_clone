@@ -1,5 +1,6 @@
 import { User } from "../models/user.js";
 import bcryptjs from "bcryptjs";
+import { generateTokenAndSetCookie } from "../utils/generateToken.js";
 
 export async function signup(req, res) {
   try {
@@ -55,16 +56,19 @@ export async function signup(req, res) {
       image,
     });
 
-    await newUser.save();
+    if (newUser) {
+      generateTokenAndSetCookie(newUser, res);
+      await newUser.save();
 
-    //remove password from the response
-    res.status(201).json({
-      success: true,
-      user: {
-        ...newUser._doc,
-        password: "",
-      },
-    });
+      //remove password from the response
+      res.status(201).json({
+        success: true,
+        user: {
+          ...newUser._doc,
+          password: "",
+        },
+      });
+    }
   } catch (error) {
     console.log("Error in signup", error.message);
     res.status(500).json({ success: false, message: "Internal server error" });
