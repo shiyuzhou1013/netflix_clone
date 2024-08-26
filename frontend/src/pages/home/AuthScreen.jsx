@@ -43,6 +43,39 @@ const AuthScreen = () => {
           </button>
         </form>
       </div>
+
+      {/* separator */}
+      <div className="h-2 w-full bg-[#232323]" aria-hidden="true" />
+
+      {/* 1st section */}
+      <div className="py-10 bg-black text-white">
+        <div className="flex max-w-6xl mx-auto items-center justify-between md:flex-row flex-col px-4 md:px-2 ">
+          {/* left side */}
+          <div className="flex-1 text-center md:text-left">
+            <h2 className="text-4xl md:text-5xl font-extrabold mb-4">
+              Enjoy on your TV
+            </h2>
+            <p className="text-lg md:text-xl">
+              Watch on Smart TVs, PlayStation, Xbox, Chromecast, Apple TV,
+              Blu-ray players, and more
+            </p>
+          </div>
+
+          {/* rigth side */}
+          <div className="flex-1 relative">
+            <img src="/tv.png" alt="Tv image" className="mt-4 z-10 relative" />
+            <video
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-1/2 z-0"
+              playsInline
+              autoPlay={true}
+              muted
+              loop
+            >
+              <source src="/hero-vid.m4v" type="video/mp4" />
+            </video>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
