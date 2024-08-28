@@ -59,7 +59,7 @@ const MovieSlider = ({ category }) => {
       >
         {content.map((item) => (
           <Link
-            to={`/watch/${item.is}`}
+            to={`/watch/${item.id}`}
             className="min-w-[250px] relative group"
             key={item.id}
           >
