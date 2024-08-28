@@ -6,20 +6,14 @@ import NavBar from "../components/NavBar";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import ReactPlayer from "react-player";
 import { ORIGINAL_IMG_BASE_URL, SMALL_IMG_BASE_URL } from "../utils/constants";
-
-function formatReleaseDate(date) {
-  return new Date(date).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
+import { formatReleaseDate } from "../utils/dateFunction";
+import WatchPageSkeleton from "../components/skeletons/WatchPageSkeleton";
 
 const WatchPage = () => {
   const { id } = useParams();
   const [trailers, setTrailers] = useState([]);
   const [similarContent, setSimilarContent] = useState([]);
-  const [details, setDetails] = useState([]);
+  const [details, setDetails] = useState({});
   const [currentTrailerIdx, setCurrentTrailerIdx] = useState(0);
   const [loading, setLoading] = useState(true);
   const { contentType } = useContentStore();
@@ -27,12 +21,11 @@ const WatchPage = () => {
 
   useEffect(() => {
     const getTrailers = async () => {
-      const res = await axios.get(`/api/v1/${contentType}/${id}/trailers`);
       try {
-        setTrailers(res.data.trailers || []);
+        const res = await axios.get(`/api/v1/${contentType}/${id}/trailers`);
+        setTrailers(res.data.trailers);
       } catch (error) {
         if (error.message.includes("404")) {
-          console.log("No trailers found");
           setTrailers([]);
         }
       }
@@ -43,12 +36,11 @@ const WatchPage = () => {
 
   useEffect(() => {
     const getSimilars = async () => {
-      const res = await axios.get(`/api/v1/${contentType}/${id}/similars`);
       try {
-        setSimilarContent(res.data.similars || []);
+        const res = await axios.get(`/api/v1/${contentType}/${id}/similars`);
+        setSimilarContent(res.data.similars);
       } catch (error) {
         if (error.message.includes("404")) {
-          console.log("No trailers found");
           setSimilarContent([]);
         }
       }
@@ -59,13 +51,12 @@ const WatchPage = () => {
 
   useEffect(() => {
     const getDetails = async () => {
-      const res = await axios.get(`/api/v1/${contentType}/${id}/details`);
       try {
-        setDetails(res.data.content || []);
+        const res = await axios.get(`/api/v1/${contentType}/${id}/details`);
+        setDetails(res.data.content);
       } catch (error) {
         if (error.message.includes("404")) {
-          console.log("No trailers found");
-          setDetails([]);
+          setDetails(null);
         }
       } finally {
         setLoading(false);
@@ -101,12 +92,33 @@ const WatchPage = () => {
     }
   };
 
+  if (loading)
+    return (
+      <div className="min-h-screen bg-black p-10">
+        <WatchPageSkeleton />
+      </div>
+    );
+
+  if (!details)
+    return (
+      <div className="bg-black text-white h-screen">
+        <div className="max-w-6xl mx-auto">
+          <NavBar />
+          <div className="text-center mx-auto px-4 py-8 h-full mt-40">
+            <h2 className="text-2xl sm:text-5xl font-bold text-balance">
+              Content not found
+            </h2>
+          </div>
+        </div>
+      </div>
+    );
+
   return (
     <div className="bg-black min-h-screen text-white">
       <div className="mx-auto container px-4 py-8 h-full">
         <NavBar />
 
-        {trailers?.length > 0 && (
+        {trailers.length > 0 && (
           <div className="flex justify-between items-center mb-4">
             <button
               className={`bg-gray-500/70 hover: bg-gray-500 text-white py-2 px-4 rounded ${
@@ -133,7 +145,7 @@ const WatchPage = () => {
         )}
 
         <div className="aspect-video mb-8 p-2 sm:px-10 md:px-32">
-          {trailers?.length > 0 && (
+          {trailers.length > 0 && (
             <ReactPlayer
               controls={true}
               width={"100%"}
@@ -172,41 +184,44 @@ const WatchPage = () => {
             <p className="mt-4 text-lg">{details?.overview}</p>
           </div>
           <img
-            src={ORIGINAL_IMG_BASE_URL + details.poster_path}
+            src={ORIGINAL_IMG_BASE_URL + details?.poster_path}
             alt="Poster image"
             className="max-h-[600px] rounded-md"
           />
         </div>
 
-        {similarContent?.length > 0 && (
+        {similarContent.length > 0 && (
           <div className="mt-12 max-w-5xl mx-auto relative">
             <h3 className="text-3xl font-bold mb-4">Similar Movies/TV Shows</h3>
             <div
               className="flex overflow-x-hidden scrollbar-hide gap-4 pb-4 group"
               ref={sliderRef}
             >
-              {similarContent.map((content) => (
-                <Link
-                  key={content.id}
-                  to={`/watch/${content.id}`}
-                  className="w-52 flex-none"
-                >
-                  <img
-                    src={SMALL_IMG_BASE_URL + content.poster_path}
-                    alt="Poster path"
-                    className="w-full h-auto rounded-md"
-                  />
-                  <h4 className="mt-2 text-lg font-semibold">
-                    {content.title || content.name}
-                  </h4>
-                </Link>
-              ))}
+              {similarContent.map((content) => {
+                if (!content.poster_path) return null;
+                return (
+                  <Link
+                    key={content.id}
+                    to={`/watch/${content.id}`}
+                    className="w-52 flex-none"
+                  >
+                    <img
+                      src={SMALL_IMG_BASE_URL + content.poster_path}
+                      alt="Poster path"
+                      className="w-full h-auto rounded-md"
+                    />
+                    <h4 className="mt-2 text-lg font-semibold">
+                      {content.title || content.name}
+                    </h4>
+                  </Link>
+                );
+              })}
               <ChevronRight
-                className="absolute top-1/2 -translate-y-1/2 right-2 w-8 h-8 opacity-0 group-hover: opacity-100 transition-all duration-300 cursor-pointer bg-red-600 text-white rounded-full"
+                className="absolute top-1/2 -translate-y-1/2 right-2 w-8 h-8 opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer bg-red-600 text-white rounded-full"
                 onClick={scrollRight}
               />
               <ChevronLeft
-                className="absolute top-1/2 -translate-y-1/2 left-2 w-8 h-8 opacity-0 group-hover: opacity-100 transition-all duration-300 cursor-pointer bg-red-600 text-white rounded-full"
+                className="absolute top-1/2 -translate-y-1/2 left-2 w-8 h-8 opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer bg-red-600 text-white rounded-full"
                 onClick={scrollLeft}
               />
             </div>
