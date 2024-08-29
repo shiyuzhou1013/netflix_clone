@@ -49,7 +49,7 @@ const MovieSlider = ({ category }) => {
       onMouseEnter={() => setShowArrows(true)}
       onMouseLeave={() => setShowArrows(false)}
     >
-      <h2 className="mb-4 text-axl font-bold">
+      <h2 className="mb-4 text-2xl font-bold">
         {formatedCategoryName} {formatedContentType}
       </h2>
 

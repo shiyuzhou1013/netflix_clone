@@ -6,6 +6,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { ORIGINAL_IMG_BASE_URL } from "../utils/constants";
+import { set } from "mongoose";
 
 const SearchPage = () => {
   const [activeTab, setActiveTab] = useState("movie");
@@ -102,7 +103,12 @@ const SearchPage = () => {
                     <h2 className="mt-2 text-xl font-bold">{result.name}</h2>
                   </div>
                 ) : (
-                  <Link to={"/watch/" + result.id}>
+                  <Link
+                    to={"/watch/" + result.id}
+                    onClick={() => {
+                      setContentType(activeTab);
+                    }}
+                  >
                     <img
                       src={ORIGINAL_IMG_BASE_URL + result.poster_path}
                       alt={result.title || result.name}

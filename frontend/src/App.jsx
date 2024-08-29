@@ -5,6 +5,7 @@ import SignUpPage from "./pages/SignUpPage";
 import WatchPage from "./pages/WatchPage";
 import SearchPage from "./pages/SearchPage";
 import HistoryPage from "./pages/HistoryPage";
+import NotFoundPage from "./pages/NotFoundPage";
 import Footer from "./components/Footer";
 import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/authUser";
@@ -52,6 +53,7 @@ function App() {
           path="/history"
           element={user ? <HistoryPage /> : <Navigate to={"/login"} />}
         />
+        <Route path="/*" element={<NotFoundPage />} />
       </Routes>
       <Footer />
 

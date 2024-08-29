@@ -27,7 +27,7 @@ const HomeScreen = () => {
         <NavBar />
 
         {imgLoading && (
-          <div className="absolute top-0 left-0 w-full h-full bg-black/70 flex items-center justify-center -z-10 shimmer" />
+          <div className="absolute top-0 left-0 w-full h-full bg-black/70 flex items-center justify-center shimmer -z-10" />
         )}
 
         <img
@@ -38,14 +38,20 @@ const HomeScreen = () => {
             setImgLoading(false);
           }}
         />
+
         <div
           className="absolute top-0 left-0 w-full h-full bg-black/50 -z-50"
           aria-hidden="true"
         />
-        <div className="absolute top-0 left-0  w-full h-full flex flex-col justify-center px-8 md:px-16 lg:px-32">
-          <div className="bg-gradient-to-b from-black via-transparent to-transparent absolute top-0 left-0  w-full h-full -z-10" />
+
+        <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-center px-8 md:px-16 lg:px-32">
+          <div
+            className="bg-gradient-to-b from-black via-transparent to-transparent 
+					absolute w-full h-full top-0 left-0 -z-10"
+          />
+
           <div className="max-w-2xl">
-            <h1 className="mt-4 text-6xl font-extrabold text-balance">
+            <h1 className="mt-4 text-4xl sm:text-6xl font-extrabold text-balance">
               {trendingContent?.title || trendingContent?.name}
             </h1>
             <p className="mt-2 text-lg">
@@ -53,12 +59,13 @@ const HomeScreen = () => {
                 trendingContent?.first_air_date.split("-")[0]}{" "}
               | {trendingContent?.adult ? "18+" : "PG-13"}
             </p>
-            <p className="mt-4 text-lg">
-              {trendingContent?.overview.length > 200
+            <p className="mt-4 text-sm sm:text-lg">
+              {trendingContent?.overview.length > 150
                 ? trendingContent?.overview.slice(0, 200) + "..."
                 : trendingContent?.overview}
             </p>
           </div>
+
           <div className="flex mt-8">
             <Link
               to={`/watch/${trendingContent?.id}`}
@@ -67,6 +74,7 @@ const HomeScreen = () => {
               <Play className="size-6 mr-2 fill-black" />
               Play
             </Link>
+
             <Link
               to={`/watch/${trendingContent?.id}`}
               className="bg-gray-500/70 hover:bg-gray-500 text-white py-2 px-4 rounded flex items-center"
